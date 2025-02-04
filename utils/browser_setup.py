@@ -1,5 +1,7 @@
 from selenium import webdriver
 import yaml
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+
 
 def get_driver(browser_override=None, config_dict=None):
     # Use the provided config dictionary if available; otherwise load from file.
@@ -44,10 +46,18 @@ def get_driver(browser_override=None, config_dict=None):
     else:
         # Local execution ignores cloud_provider settings.
         if browser == 'chrome':
-            return webdriver.Chrome()
-        elif browser == 'firefox':
-            return webdriver.Firefox()
+            from selenium.webdriver.chrome.options import Options as ChromeOptions
+            options = ChromeOptions()
+            options.enable_bidi = True
+            return webdriver.Chrome(options=options)
         elif browser == 'edge':
-            return webdriver.Edge()
+            from selenium.webdriver.edge.options import Options as EdgeOptions
+            options = EdgeOptions()
+            options.enable_bidi = True
+            return webdriver.Edge(options=options)
+        elif browser == 'firefox':
+            options = FirefoxOptions()
+            options.enable_bidi = True
+            return webdriver.Firefox(options=options)
         else:
             raise ValueError(f"Unsupported browser: {browser}") 
