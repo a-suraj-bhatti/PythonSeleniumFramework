@@ -92,11 +92,12 @@ def ui_setup(request, browser_name, config_data):
     # Teardown: Quit the browser after the test
     ui_actions.quit_browser()
 
-# Autouse fixture to attach ui_setup to test classes
+# Autouse fixture to attach ui_setup for UI tests only
 @pytest.fixture(autouse=True)
-def attach_ui_setup(request, ui_setup):
-    # Only attach if the test is part of a class (i.e. there's a "self")
-    if request.cls is not None:
+def attach_ui_setup(request):
+    # Only attach if the test is marked with @pytest.mark.ui and defined in a class.
+    if request.cls is not None and request.node.get_closest_marker("ui"):
+        ui_setup = request.getfixturevalue("ui_setup")
         request.cls.driver, request.cls.ui_actions = ui_setup
 
 # Fixture for API tests uses the overridden API base URL.
