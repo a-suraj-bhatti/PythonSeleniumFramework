@@ -1,0 +1,10 @@
+execution: local               # Options: "local" or "cloud"
+browsers:
+  - chrome
+  - firefox
+base_url: "https://www.saucedemo.com/"
+api_base_url: "http://api.example.com"
+cloud_provider:
+  name: "browserstack"         # or "saucelabs"
+  username: "your_username"
+  access_key: "your_access_key" 
