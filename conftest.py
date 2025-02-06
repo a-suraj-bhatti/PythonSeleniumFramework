@@ -49,9 +49,9 @@ def pytest_generate_tests(metafunc):
                 with open("config/config.yaml", "r") as file:
                     conf = yaml.safe_load(file)
                 browsers = conf.get("browsers", ["chrome"])
-            metafunc.parametrize("browser_name", browsers)
+            metafunc.parametrize("browser_name", browsers, indirect=True)
         else:
-            metafunc.parametrize("browser_name", ["cloud"])
+            metafunc.parametrize("browser_name", ["cloud"], indirect=True)
 
 # Fixture to load configuration and override with command-line arguments (if provided)
 @pytest.fixture(scope="session")
@@ -80,6 +80,14 @@ def config_data(request):
 
     return config
 
+# Define the browser_name fixture. It now safely returns the parameter using getattr.
+@pytest.fixture
+def browser_name(request):
+    param = getattr(request, "param", None)
+    if param is not None:
+        return param
+    return "chrome"  # default fallback
+
 # Fixture for UI tests; driver is created based on the environment & browser_name, using config overrides.
 @pytest.fixture(scope="function")
 def ui_setup(request, browser_name, config_data):
@@ -92,13 +100,13 @@ def ui_setup(request, browser_name, config_data):
     # Teardown: Quit the browser after the test
     ui_actions.quit_browser()
 
-# Autouse fixture to attach ui_setup for UI tests only
+# Autouse fixture to attach ui_setup for UI tests only.
+# It attaches *only* for tests marked with @pytest.mark.ui and defined in a class.
 @pytest.fixture(autouse=True)
-def attach_ui_setup(request):
-    # Only attach if the test is marked with @pytest.mark.ui and defined in a class.
+def attach_ui_setup(request, browser_name):
     if request.cls is not None and request.node.get_closest_marker("ui"):
-        ui_setup = request.getfixturevalue("ui_setup")
-        request.cls.driver, request.cls.ui_actions = ui_setup
+        ui_setup_instance = request.getfixturevalue("ui_setup")
+        request.cls.driver, request.cls.ui_actions = ui_setup_instance
 
 # Fixture for API tests uses the overridden API base URL.
 @pytest.fixture(scope="function")
