@@ -54,7 +54,7 @@ automation_framework/
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/your-username/automation_framework.git
+   git clone https://github.com/a-suraj-bhatti/PythonSeleniumFramework.git
    cd automation_framework
    ```
 
