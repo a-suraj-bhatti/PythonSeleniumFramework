@@ -3,6 +3,7 @@ import yaml
 from utils.browser_setup import get_driver
 from utils.ui_actions import UIActions
 from utils.api_actions import APIActions
+from py.xml import html
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -91,13 +92,14 @@ def browser_name(request):
 # Fixture for UI tests; driver is created based on the environment & browser_name, using config overrides.
 @pytest.fixture(scope="function")
 def ui_setup(request, browser_name, config_data):
+    # Record the browser name on the test node for reporting purposes.
+    request.node.browser = browser_name
     if config_data.get("execution", "local") == "cloud":
         driver = get_driver(config_dict=config_data)
     else:
         driver = get_driver(browser_override=browser_name, config_dict=config_data)
     ui_actions = UIActions(driver)
     yield driver, ui_actions
-    # Teardown: Quit the browser after the test
     ui_actions.quit_browser()
 
 # Autouse fixture to attach ui_setup for UI tests only.
@@ -111,4 +113,54 @@ def attach_ui_setup(request, browser_name):
 # Fixture for API tests uses the overridden API base URL.
 @pytest.fixture(scope="function")
 def api_setup(config_data):
-    return APIActions(config_data["api_base_url"])    
+    return APIActions(config_data["api_base_url"])
+
+def pytest_configure(config):
+    # Set default HTML report output if not specified.
+    if not config.option.htmlpath:
+        config.option.htmlpath = 'report.html'
+    # Ensure that a metadata dictionary exists.
+    if not hasattr(config, 'metadata'):
+        config.metadata = {}
+    config.metadata['Project Name'] = 'Selenium & API Automation Testing Framework'
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    # This hook is called when each test's report is being generated.
+    outcome = yield
+    rep = outcome.get_result()
+    # Attach the browser information (if set) from the test node to the report.
+    rep.browser = getattr(item, "browser", "N/A")
+
+def pytest_html_results_table_header(cells):
+    # Insert the header for a new column "Browser" into the HTML report.
+    cells.insert(2, html.th('Browser'))
+
+def pytest_html_results_table_row(report, cells):
+    # Insert the actual browser value into the row for each test.
+    cells.insert(2, html.td(report.browser))
+
+def pytest_configure(config):
+    # Set default HTML report output if not specified.
+    if not config.option.htmlpath:
+        config.option.htmlpath = 'report.html'
+    # Ensure that a metadata dictionary exists.
+    if not hasattr(config, 'metadata'):
+        config.metadata = {}
+    config.metadata['Project Name'] = 'Selenium & API Automation Testing Framework'
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    # This hook is called when each test's report is being generated.
+    outcome = yield
+    rep = outcome.get_result()
+    # Attach the browser information (if set) from the test node to the report.
+    rep.browser = getattr(item, "browser", "N/A")
+
+def pytest_html_results_table_header(cells):
+    # Insert the header for a new column "Browser" into the HTML report.
+    cells.insert(2, html.th('Browser'))
+
+def pytest_html_results_table_row(report, cells):
+    # Insert the actual browser value into the row for each test.
+    cells.insert(2, html.td(report.browser))    

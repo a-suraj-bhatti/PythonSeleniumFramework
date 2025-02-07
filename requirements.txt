@@ -3,3 +3,6 @@ pytest
 pytest-xdist
 requests
 pyyaml
+pytest-html
+py
+pytest-rerunfailures

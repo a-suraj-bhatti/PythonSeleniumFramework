@@ -13,4 +13,4 @@ class TestExamplePage(BaseUITest):
     def test_example_page2(self):
         self.ui_actions.open_url("https://www.saucedemo.com/")
         page = ExamplePage(self.driver)
-        assert page.get_example_text() == "Swag Labs"
+        assert page.get_example_text() == "Swag Labs1"
