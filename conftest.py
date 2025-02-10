@@ -4,6 +4,7 @@ from utils.browser_setup import get_driver
 from utils.ui_actions import UIActions
 from utils.api_actions import APIActions
 from py.xml import html
+import os
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -57,7 +58,8 @@ def pytest_generate_tests(metafunc):
 # Fixture to load configuration and override with command-line arguments (if provided)
 @pytest.fixture(scope="session")
 def config_data(request):
-    with open("config/config.yaml", "r") as file:
+    config_path = os.path.join(os.path.dirname(__file__), "config", "config.yaml")
+    with open(config_path, "r") as file:
         config = yaml.safe_load(file)
     
     # Override execution mode if provided via command-line
@@ -137,30 +139,6 @@ def pytest_html_results_table_header(cells):
     cells.insert(2, html.th('Browser'))
 
 def pytest_html_results_table_row(report, cells):
-    # Insert the actual browser value into the row for each test.
-    cells.insert(2, html.td(report.browser))
-
-def pytest_configure(config):
-    # Set default HTML report output if not specified.
-    if not config.option.htmlpath:
-        config.option.htmlpath = 'report.html'
-    # Ensure that a metadata dictionary exists.
-    if not hasattr(config, 'metadata'):
-        config.metadata = {}
-    config.metadata['Project Name'] = 'Selenium & API Automation Testing Framework'
-
-@pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    # This hook is called when each test's report is being generated.
-    outcome = yield
-    rep = outcome.get_result()
-    # Attach the browser information (if set) from the test node to the report.
-    rep.browser = getattr(item, "browser", "N/A")
-
-def pytest_html_results_table_header(cells):
-    # Insert the header for a new column "Browser" into the HTML report.
-    cells.insert(2, html.th('Browser'))
-
-def pytest_html_results_table_row(report, cells):
-    # Insert the actual browser value into the row for each test.
-    cells.insert(2, html.td(report.browser))    
+    # Safely insert the browser value into the HTML report row.
+    browser = getattr(report, "browser", "N/A")
+    cells.insert(2, html.td(browser))    
