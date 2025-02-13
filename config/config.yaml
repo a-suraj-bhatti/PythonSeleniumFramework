@@ -7,4 +7,6 @@ api_base_url: "http://api.example.com"
 cloud_provider:
   name: "browserstack"         # or "saucelabs"
   username: "your_username"
-  access_key: "your_access_key" 
+  access_key: "your_access_key"
+selenium:
+  timeout: 10  # Default timeout in seconds 
