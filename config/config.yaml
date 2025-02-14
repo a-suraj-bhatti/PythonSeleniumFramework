@@ -1,7 +1,6 @@
 execution: local               # Options: "local" or "cloud"
 browsers:
   - chrome
-  - firefox
 base_url: "https://www.saucedemo.com/"
 api_base_url: "http://api.example.com"
 cloud_provider:

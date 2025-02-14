@@ -1,5 +1,4 @@
 from pages.example_page import ExamplePage
-from tests.base_ui_test import BaseUITest
 
 class PageFactory:
     _instance = None
@@ -7,11 +6,16 @@ class PageFactory:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
+            cls._instance._driver = None
         return cls._instance
     
     @property
     def driver(self):
-        return BaseUITest.driver
+        return self._driver
+
+    @driver.setter
+    def driver(self, value):
+        self._driver = value
     
     @property
     def example_page(self):

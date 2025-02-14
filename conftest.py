@@ -111,6 +111,9 @@ def attach_ui_setup(request, browser_name):
     if request.cls is not None and request.node.get_closest_marker("ui"):
         ui_setup_instance = request.getfixturevalue("ui_setup")
         request.cls.driver, request.cls.ui_actions = ui_setup_instance
+        # Update the page factory with the current driver
+        from pages.page_factory import page
+        page.driver = request.cls.driver
 
 # Fixture for API tests uses the overridden API base URL.
 @pytest.fixture(scope="function")
