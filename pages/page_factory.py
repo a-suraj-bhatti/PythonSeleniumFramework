@@ -1,27 +1,25 @@
 from pages.example_page import ExamplePage
+from typing import Optional
+from selenium.webdriver.remote.webdriver import WebDriver
 
 class PageFactory:
-    _instance = None
-    
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._driver = None
-        return cls._instance
+    def __init__(self, driver: Optional[WebDriver] = None):
+        self._driver = driver
     
     @property
-    def driver(self):
+    def driver(self) -> WebDriver:
         return self._driver
 
     @driver.setter
-    def driver(self, value):
+    def driver(self, value: WebDriver) -> None:
         self._driver = value
     
     @property
-    def example_page(self):
+    def example_page(self) -> ExamplePage:
         return ExamplePage(self.driver)
 
-# Create a single instance to be imported
-page = PageFactory()
+# Instead of a singleton, create a factory function
+def create_page_factory(driver: Optional[WebDriver] = None) -> PageFactory:
+    return PageFactory(driver)
 
 # Add additional properties for other pages as needed. 

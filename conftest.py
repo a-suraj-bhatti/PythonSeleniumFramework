@@ -39,7 +39,7 @@ def pytest_generate_tests(metafunc):
         if execution_cli:
             execution = execution_cli
         else:
-            with open("config/config.yaml", "r") as file:
+            with open(os.getcwd()+"/config/config.yaml", "r") as file:
                 conf = yaml.safe_load(file)
             execution = conf.get("execution", "local")
 
@@ -111,9 +111,9 @@ def attach_ui_setup(request, browser_name):
     if request.cls is not None and request.node.get_closest_marker("ui"):
         ui_setup_instance = request.getfixturevalue("ui_setup")
         request.cls.driver, request.cls.ui_actions = ui_setup_instance
-        # Update the page factory with the current driver
-        from pages.page_factory import page
-        page.driver = request.cls.driver
+        # Create a new page factory instance for each test
+        from pages.page_factory import create_page_factory
+        request.cls.page = create_page_factory(request.cls.driver)
 
 # Fixture for API tests uses the overridden API base URL.
 @pytest.fixture(scope="function")
