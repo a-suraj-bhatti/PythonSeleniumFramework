@@ -183,17 +183,6 @@ pytest -m api
 - **Cloud Testing:**
   Ensure your cloud environment credentials are correctly set in `config/config.yaml` if running in cloud mode.
 
-## Contributing
-
-Contributions are welcome! Feel free to fork the repository and submit pull requests for improvements, additional features, or bug fixes. Please ensure that your code follows the existing style and includes tests where appropriate.
-
-## License
-
-This project is open-source under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-For questions or support, please contact [your-email@example.com](mailto:your-email@example.com).
 
 ---
 
